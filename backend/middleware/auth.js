@@ -6,10 +6,10 @@ dotenv.config();
 const auth = (req, res, next) => {
   let token = req.headers.authorization;
   try {
-    const response = jwt.verify(token.split(" ")[1], process.env.secretkey);
+    const response = jwt.verify(token.split(" ")[1], process.env.SECRET_KEY);
     req.role = response.role;
-    req.id = response.userId
-  
+    req.id = response.userId;
+
     return next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

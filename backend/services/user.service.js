@@ -21,10 +21,10 @@ const encryptPassword = async (password) => {
 };
 
 const createUser = async (userInfo) => {
-  const { username, email, password, role } = userInfo;
+  const { username, email, password,role } = userInfo;
 
   if (await User.findOne({ email })) {
-    throw new ApiError(200, "Email is already taken.");
+    throw new Error( "Email is already taken.");
   }
 
   const hashPassword = await encryptPassword(password);

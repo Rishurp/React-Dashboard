@@ -1,45 +1,36 @@
-import Navbar from "./Components/Navbar";
-import ChartSection from "./Components/ChartSection";
-import UserTable from "./Components/UserTable";
-import { Container, Box, Grid2 } from "@mui/material";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import Register from "./Components/Register";
+import Login from "./Components/Login";
+import Home from "./Components/Home";
+
+export const config = {
+  backendEndpoint: "https://react-dashboard-dcty.onrender.com/v1",
+};
 
 function App() {
-  const [users, setUsers] = useState([]);
+  const [token] = useLocalStorage("token", null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await axios.get(
-        "https://jsonplaceholder.typicode.com/users"
-      );
-      setUsers(response.data);
-    };
-    fetchUsers();
-  }, []);
-
+  const ProtectRoute = ({ children }) => {
+    if (!token) {
+      return <Navigate to="/login" />;
+    }
+    return children;
+  };
 
   return (
-    <Container maxWidth="lg">
-      <Navbar />
-      <Box my={4}>
-        <Grid2 container spacing={4}>
-          <Grid2 item xs={12} sm={6}>
-            <Box sx={{ textAlign: "center", padding: 2, width: "100%", height : "100%"}}>
-              <ChartSection users={users} />
-            </Box>
-          </Grid2>
-          {/* <Grid2 item xs={12} sm={6}>
-            <Box sx={{ textAlign: "center", padding: 2 }}>
-              <h2>Additional Analytics</h2>
-            </Box>
-          </Grid2> */}
-        </Grid2>
-      </Box>
-      <Box my={4}>
-        <UserTable users={users} />
-      </Box>
-    </Container>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <ProtectRoute>
+            <Home />
+          </ProtectRoute>
+        }
+      ></Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
 
