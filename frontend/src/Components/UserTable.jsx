@@ -21,26 +21,28 @@ const UserTable = ({ users }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleSearch = (e) => {   
+  useEffect(() => {
+    // Normalize data: If `users` is a single object, convert it to an array
+    const normalizedUsers = Array.isArray(users) ? users : [users];
+    setFilteredUsers(normalizedUsers);
+  }, [users]);
+
+  const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearch(value);
-    setFilteredUsers(
-      users.filter(
+    setFilteredUsers((prevUsers) =>
+      prevUsers.filter(
         (user) =>
-          user.name.toLowerCase().includes(value) ||
+          user.username.toLowerCase().includes(value) ||
           user.email.toLowerCase().includes(value)
       )
     );
   };
 
-  useEffect(() => {
-    setFilteredUsers(users);
-  }, [users]);
-
   const handleSort = (order) => {
     const sorted = [...filteredUsers].sort((a, b) => {
-      if (order === "asc") return a.name.localeCompare(b.name);
-      return b.name.localeCompare(a.name);
+      if (order === "asc") return a.username.localeCompare(b.username);
+      return b.username.localeCompare(a.username);
     });
     setFilteredUsers(sorted);
     setSortOrder(order);
@@ -56,7 +58,7 @@ const UserTable = ({ users }) => {
   return (
     <Box sx={{ overflowX: "auto" }}>
       <TextField
-        label="Search by name or email"
+        label="Search by username or email"
         variant="outlined"
         fullWidth
         margin="normal"
@@ -87,19 +89,17 @@ const UserTable = ({ users }) => {
                 </Box>
               </TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Website</TableCell>
-              <TableCell>Phone Number</TableCell>
+              <TableCell>Role</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredUsers
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
+              .map((user, index) => (
+                <TableRow key={user.id || index}>
+                  <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.website}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>{user.role}</TableCell>
                 </TableRow>
               ))}
           </TableBody>

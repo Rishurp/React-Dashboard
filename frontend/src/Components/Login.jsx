@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { config } from "../App";
@@ -13,6 +19,7 @@ function Login() {
   const [username, setUsername] = useLocalStorage("username", null);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,24 +27,27 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       let res = await axios.post(
         `${config.backendEndpoint}/auth/login`,
         formData
       );
-      console.log("API Response:", res);
+      console.log("API Response:", res.data);
 
       if (res.status === 200) {
-        console.log("Login successful. Navigating...");
+
         setUserId(res.data.response._id);
         setToken(res.data.token);
-        setUsername(res.data.response.name);
+        setUsername(res.data.response.username);
         enqueueSnackbar("Login Successfully.");
         navigate("/");
       }
     } catch (error) {
       console.error("Login failed:", error);
       enqueueSnackbar("Wrong Credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +85,7 @@ function Login() {
           fullWidth
           className="mt-4"
         >
-          Login
+          {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
         </Button>
         <Button
           onClick={() => navigate("/register")}

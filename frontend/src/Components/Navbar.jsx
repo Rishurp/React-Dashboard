@@ -4,6 +4,7 @@ import {
   Toolbar,
   Typography,
   IconButton,
+  Button,
   Drawer,
   List,
   ListItem,
@@ -15,7 +16,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
 
-const Navbar = () => {
+const Navbar = ({ onLogout, username }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const toggleDrawer = (open) => (event) => {
@@ -50,35 +51,50 @@ const Navbar = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "flex" } }}>
+          <Box sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center" }}>
             {menuItems.map((item, index) => (
               <Typography
                 key={index}
                 variant="button"
-                sx={{ ml: 2, cursor: "pointer", color: "white" }}
+                sx={{ ml: 3, cursor: "pointer", color: "white" }}
               >
                 {item.text}
               </Typography>
             ))}
           </Box>
+          <Box
+            sx={{
+              display: { xs: "none", sm: "flex" },
+              alignItems: "center",
+              ml: 5, 
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{ marginRight: 2, fontWeight: "medium", color: "white" }}
+            >
+              {username}
+            </Typography>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={onLogout}
+              sx={{ textTransform: "none" }}
+            >
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer(false)}>
-        <Box
-          sx={{ width: 250 }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
-        >
-          <List>
-            {menuItems.map((item, index) => (
-              <ListItem button key={index}>
-                {item.icon}
-                <ListItemText primary={item.text} sx={{ pl: 2 }} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
+        <List sx={{ width: 250 }}>
+          {menuItems.map((item, index) => (
+            <ListItem button key={index} sx={{ marginBottom: 2 }}>
+              {item.icon}
+              <ListItemText primary={item.text} sx={{ ml: 2 }} />
+            </ListItem>
+          ))}
+        </List>
       </Drawer>
     </>
   );

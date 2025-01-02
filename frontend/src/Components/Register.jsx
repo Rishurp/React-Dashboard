@@ -8,6 +8,8 @@ import {
   MenuItem,
   Select,
   FormControl,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +22,7 @@ const Register = () => {
     password: "",
     role: "",
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -28,15 +31,18 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       console.log(formData);
       let response = await axios.post(`${config.backendEndpoint}/auth/register`, formData);
-      console.log(response)
+      console.log(response);
       alert("Registration successful!");
       navigate("/login");
     } catch (error) {
       console.error(error);
       alert("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,15 +96,18 @@ const Register = () => {
           </Select>
         </FormControl>
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          className="mt-4"
-        >
-          Register
-        </Button>
+        <Box sx={{ position: "relative" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loading}
+            className="mt-4"
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+          </Button>
+        </Box>
         <Button
           onClick={() => navigate("/login")}
           variant="text"
@@ -107,7 +116,7 @@ const Register = () => {
           className="mt-2"
         >
           Already have an account? Login
-        </Button>
+        </Button> 
       </form>
     </Container>
   );
